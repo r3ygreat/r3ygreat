@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090f">
+  <meta name="description" content="Temukan sisi dirimu lewat personality test interaktif dari r3yy.">
+  <title>r3yy — Personality Test</title>
+  <style>
+    :root {
+      --bg: #09090f; --panel: rgba(21, 21, 34, .82); --line: rgba(255,255,255,.10);
+      --text: #f5f5ff; --muted: #a5a5bd; --accent: #a78bfa; --accent2: #67e8f9;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(ellipse at 15% 0%, rgba(124,58,237,.20), transparent 42%),
+                  radial-gradient(ellipse at 90% 35%, rgba(8,145,178,.12), transparent 36%), var(--bg);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .13;
+      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 38px 38px; mask-image: linear-gradient(to bottom, black, transparent 85%);
+    }
+    .orb { position: fixed; width: 220px; height: 220px; border-radius: 50%; filter: blur(80px); opacity: .18; z-index: -1; animation: float 9s ease-in-out infinite; }
+    .orb.one { background: #8b5cf6; top: 35%; left: -120px; }
+    .orb.two { background: #06b6d4; right: -130px; top: 60%; animation-delay: -4s; }
+    @keyframes float { 50% { transform: translate(30px,-35px) scale(1.15); } }
+    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 50% { box-shadow: 0 0 32px rgba(167,139,250,.22); } }
+    header { width: min(1040px, calc(100% - 36px)); margin: 0 auto; padding: 24px 0; display: flex; justify-content: space-between; align-items: center; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 850; letter-spacing: -.04em; font-size: 1.35rem; }
+    .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #6366f1); color: #080812; box-shadow: 0 0 24px #8b5cf644; }
+    .tag { font-size: .76rem; color: var(--muted); border: 1px solid var(--line); padding: 8px 12px; border-radius: 999px; background: #ffffff06; }
+    main { width: min(760px, calc(100% - 32px)); margin: 35px auto 70px; }
+    .hero { text-align: center; padding: 28px 0 24px; animation: rise .7s both; }
+    .eyebrow { color: var(--accent2); text-transform: uppercase; letter-spacing: .2em; font-size: .72rem; font-weight: 800; }
+    h1 { font-size: clamp(2.55rem, 9vw, 5rem); line-height: .99; letter-spacing: -.065em; margin: 18px 0; }
+    .gradient { background: linear-gradient(100deg, #fff 10%, #c4b5fd 48%, #67e8f9 95%); color: transparent; background-clip: text; -webkit-background-clip: text; }
+    .hero p { max-width: 520px; margin: 0 auto; color: var(--muted); line-height: 1.75; font-size: 1rem; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 25px; padding: clamp(20px, 5vw, 34px); backdrop-filter: blur(16px); box-shadow: 0 25px 90px #0005; animation: rise .7s .12s both; }
+    .intro-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 24px 0; }
+    .stat { padding: 15px 8px; text-align: center; background: #ffffff05; border: 1px solid var(--line); border-radius: 15px; }
+    .stat strong { display: block; font-size: 1.1rem; margin-bottom: 5px; }
+    .stat span { font-size: .76rem; color: var(--muted); }
+    .btn { border: 0; border-radius: 14px; padding: 14px 20px; cursor: pointer; font: inherit; font-weight: 800; transition: transform .18s, filter .18s, border-color .18s; }
+    .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    .btn:active { transform: scale(.985); }
+    .primary { color: #0a0914; background: linear-gradient(100deg, #c4b5fd, #67e8f9); box-shadow: 0 8px 28px #8b5cf633; }
+    .secondary { color: var(--text); background: #ffffff08; border: 1px solid var(--line); }
+    .full { width: 100%; }
+    .note { color: var(--muted); font-size: .8rem; text-align: center; margin: 14px 0 0; line-height: 1.6; }
+    .hidden { display: none !important; }
+    .quiz-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: .83rem; margin-bottom: 14px; }
+    .progress { height: 6px; border-radius: 99px; background: #ffffff12; overflow: hidden; margin-bottom: 28px; }
+    .progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .35s ease; }
+    .question-number { color: var(--accent2); font-size: .75rem; letter-spacing: .16em; font-weight: 800; text-transform: uppercase; }
+    h2 { font-size: clamp(1.45rem, 5vw, 2rem); line-height: 1.25; letter-spacing: -.035em; margin: 12px 0 22px; }
+    .answers { display: grid; gap: 11px; }
+    .answer { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; color: var(--text); background: #ffffff05; border: 1px solid var(--line); border-radius: 15px; padding: 15px; cursor: pointer; font: inherit; line-height: 1.5; transition: .2s; }
+    .answer:hover { background: #a78bfa12; border-color: #a78bfa88; transform: translateY(-1px); }
+    .answer.selected { border-color: var(--accent); background: #a78bfa1c; box-shadow: inset 0 0 0 1px #a78bfa44; }
+    .letter { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); color: var(--accent2); font-size: .82rem; font-weight: 800; }
+    .answer.selected .letter { background: var(--accent); color: #11101a; border-color: transparent; }
+    .nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .nav .btn { min-width: 112px; }
+    .result-icon { width: 76px; height: 76px; border-radius: 24px; display: grid; place-items: center; font-size: 2.2rem; background: linear-gradient(135deg,#a78bfa30,#67e8f920); border: 1px solid #a78bfa66; margin: 0 auto 20px; animation: pulse 3s infinite; }
+    .result { text-align: center; }
+    .result h2 { font-size: clamp(2rem, 8vw, 3.2rem); margin: 12px 0; }
+    .result p { color: var(--muted); line-height: 1.8; }
+    .traits { display: grid; gap: 15px; text-align: left; margin: 25px 0; }
+    .trait-head { display: flex; justify-content: space-between; gap: 10px; font-size: .86rem; margin-bottom: 8px; }
+    .trait-head span:last-child { color: var(--accent2); }
+    .trait-bar { height: 7px; border-radius: 99px; background: #ffffff12; overflow: hidden; }
+    .trait-bar span { display: block; height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent2)); border-radius: inherit; transition: width .8s ease; }
+    .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+    footer { text-align: center; color: #77778f; font-size: .78rem; padding: 0 20px 30px; }
+    footer strong { color: #c4b5fd; }
+    @media (max-width: 480px) { header { padding: 18px 0; } main { margin-top: 18px; } .tag { font-size: .68rem; } .intro-grid { gap: 7px; } .stat span { font-size: .68rem; } .result-actions { grid-template-columns: 1fr; } .nav .btn { min-width: 0; flex: 1; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="orb one"></div><div class="orb two"></div>
+  <header>
+    <div class="brand"><span class="brand-mark">r</span><span>r3yy<span style="color:var(--accent)">.</span></span></div>
+    <span class="tag">SELF DISCOVERY / 01</span>
+  </header>
+
+  <main>
+    <section id="intro" class="hero">
+      <div class="eyebrow">Kenali sisi dirimu</div>
+      <h1 class="gradient">Discover<br>your inner world.</h1>
+      <p>Jawab beberapa pertanyaan sederhana dan temukan gambaran tentang cara kamu berpikir, bersosialisasi, serta menghadapi hal baru.</p>
+    </section>
+
+    <section id="startPanel" class="panel">
+      <div class="intro-grid">
+        <div class="stat"><strong>8</strong><span>Pertanyaan</span></div>
+        <div class="stat"><strong>2–3 mnt</strong><span>Durasi</span></div>
+        <div class="stat"><strong>4</strong><span>Tipe hasil</span></div>
+      </div>
+      <button id="startBtn" class="btn primary full">Mulai personality test <span aria-hidden="true">↗</span></button>
+      <p class="note">Tidak ada jawaban benar atau salah. Pilih yang paling menggambarkan dirimu.</p>
+    </section>
+
+    <section id="quizPanel" class="panel hidden" aria-live="polite">
+      <div class="quiz-top"><span id="stepText">PERTANYAAN 1 DARI 8</span><span id="percentText">12%</span></div>
+      <div class="progress"><span id="progressBar"></span></div>
+      <div id="questionContent"></div>
+      <div class="nav">
+        <button id="backBtn" class="btn secondary">← Kembali</button>
+        <button id="nextBtn" class="btn primary">Lanjut →</button>
+      </div>
+      <p class="note">Jawabanmu hanya diproses di halaman ini dan tidak dikirim ke server.</p>
+    </section>
+
+    <section id="resultPanel" class="panel hidden" aria-live="polite">
+      <div class="result">
+        <div id="resultIcon" class="result-icon">✦</div>
+        <div class="eyebrow">Hasil personality test kamu</div>
+        <h2 id="resultTitle" class="gradient">The Quiet Visionary</h2>
+        <p id="resultDesc"></p>
+        <div id="traits" class="traits"></div>
+        <p id="resultTip"></p>
+        <div class="result-actions">
+          <button id="shareBtn" class="btn primary">Bagikan hasil ↗</button>
+          <button id="retryBtn" class="btn secondary">Ulangi tes ↻</button>
+        </div>
+        <p class="note">Hasil ini untuk refleksi dan hiburan, bukan diagnosis psikologis atau penilaian ilmiah.</p>
+      </div>
+    </section>
+  </main>
+  <footer>Made with focus by <strong>r3yy</strong> · Be curious about yourself.</footer>
+
+  <script>
+    const questions = [
+      { q: "Setelah hari yang melelahkan, apa yang paling mengisi ulang energimu?", a: [
+        ["Menghabiskan waktu sendiri sambil melakukan hal favorit", "intro"],
+        ["Bertemu teman dan ngobrol seru", "social"],
+        ["Mencoba sesuatu yang spontan dan baru", "bold"],
+        ["Meluangkan waktu untuk orang yang dekat denganku", "care"]
+      ]},
+      { q: "Saat menghadapi masalah yang rumit, kamu biasanya…", a: [
+        ["Menganalisisnya diam-diam sampai menemukan pola", "intro"],
+        ["Berdiskusi dengan orang lain untuk mendapat ide", "social"],
+        ["Langsung mencoba solusi dan belajar dari hasilnya", "bold"],
+        ["Memikirkan dampaknya pada semua orang", "care"]
+      ]},
+      { q: "Dalam sebuah kelompok, peranmu cenderung…", a: [
+        ["Pengamat yang memberi ide setelah berpikir matang", "intro"],
+        ["Pencair suasana yang menghidupkan obrolan", "social"],
+        ["Penggerak yang berani mengambil inisiatif", "bold"],
+        ["Pendengar yang menjaga semua orang tetap nyaman", "care"]
+      ]},
+      { q: "Kamu paling tertarik pada…", a: [
+        ["Ide mendalam, pola, dan kemungkinan masa depan", "intro"],
+        ["Cerita, koneksi, dan pengalaman bersama", "social"],
+        ["Tantangan, petualangan, dan target baru", "bold"],
+        ["Hubungan bermakna dan memahami perasaan", "care"]
+      ]},
+      { q: "Kalau rencanamu tiba-tiba berubah, kamu akan…", a: [
+        ["Mundur sebentar untuk menyusun rencana baru", "intro"],
+        ["Melihat apakah ada orang yang bisa diajak bekerja sama", "social"],
+        ["Menganggapnya kesempatan untuk mencoba hal lain", "bold"],
+        ["Memastikan perubahan itu tidak menyulitkan orang lain", "care"]
+      ]},
+      { q: "Apa pujian yang paling terasa cocok untukmu?", a: [
+        ["“Kamu punya cara berpikir yang unik.”", "intro"],
+        ["“Kamu gampang membuat orang merasa akrab.”", "social"],
+        ["“Kamu berani mengambil langkah.”", "bold"],
+        ["“Kamu benar-benar memahami orang lain.”", "care"]
+      ]},
+      { q: "Saat punya tujuan besar, kamu lebih suka…", a: [
+        ["Menyusun strategi sendiri sebelum bertindak", "intro"],
+        ["Mengajak orang lain ikut membangun semangat", "social"],
+        ["Mulai dulu, lalu menyesuaikan di perjalanan", "bold"],
+        ["Memastikan tujuannya bermanfaat bagi orang sekitar", "care"]
+      ]},
+      { q: "Pilih suasana yang paling mewakili dirimu.", a: [
+        ["Malam tenang, musik, dan pikiran yang mengembara", "intro"],
+        ["Lampu kota, obrolan, dan tawa teman", "social"],
+        ["Jalan baru, adrenalin, dan kebebasan", "bold"],
+        ["Tempat hangat bersama orang-orang tersayang", "care"]
+      ]}
+    ];
+    const profiles = {
+      intro: { icon: "☾", title: "The Quiet Visionary", subtitle: "Sang pemikir tenang", desc: "Kamu cenderung reflektif, suka mengamati, dan senang menemukan makna di balik sesuatu. Kamu tidak harus menjadi yang paling ramai untuk punya perspektif yang kuat.", tip: "✨ Tantangan kecilmu: bagikan idemu lebih awal. Orang lain mungkin bisa melihat nilai yang sudah kamu temukan.", traits: [["Refleksi", 92], ["Kreativitas", 86], ["Sosial", 55], ["Keberanian mencoba", 68]] },
+      social: { icon: "✦", title: "The Social Spark", subtitle: "Pembawa energi", desc: "Kamu cenderung berkembang lewat koneksi, obrolan, dan pertukaran ide. Kehadiran orang lain bisa menjadi sumber semangat dan inspirasi bagimu.", tip: "✨ Tantangan kecilmu: sisihkan waktu tenang untuk mendengar pikiranmu sendiri di tengah banyaknya suara.", traits: [["Refleksi", 62], ["Kreativitas", 78], ["Sosial", 94], ["Keberanian mencoba", 76]] },
+      bold: { icon: "⚡", title: "The Fearless Explorer", subtitle: "Penjelajah berani", desc: "Kamu cenderung menyukai gerak, eksperimen, dan kesempatan baru. Kamu belajar banyak dengan mencoba langsung dan tidak takut menyesuaikan arah.", tip: "✨ Tantangan kecilmu: berhenti sejenak untuk mengevaluasi langkah agar energimu menuju hal yang benar-benar penting.", traits: [["Refleksi", 58], ["Kreativitas", 80], ["Sosial", 72], ["Keberanian mencoba", 95]] },
+      care: { icon: "♡", title: "The Kind Anchor", subtitle: "Pribadi yang menenangkan", desc: "Kamu cenderung peka terhadap kebutuhan orang lain dan menghargai hubungan yang tulus. Kamu sering membawa rasa aman lewat perhatian dan kesediaan mendengarkan.", tip: "✨ Tantangan kecilmu: ingat bahwa kebutuhanmu sendiri juga layak mendapat perhatian dan ruang.", traits: [["Refleksi", 78], ["Kreativitas", 70], ["Sosial", 82], ["Kepekaan", 95]] }
+    };
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+    const $ = id => document.getElementById(id);
+    function showPanel(id) {
+      ["startPanel", "quizPanel", "resultPanel"].forEach(x => $(x).classList.toggle("hidden", x !== id));
+      $("intro").classList.toggle("hidden", id !== "startPanel");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    function renderQuestion() {
+      const item = questions[current];
+      $("stepText").textContent = `PERTANYAAN ${current + 1} DARI ${questions.length}`;
+      const percent = Math.round(((current + 1) / questions.length) * 100);
+      $("percentText").textContent = `${percent}%`;
+      $("progressBar").style.width = `${percent}%`;
+      $("questionContent").innerHTML = `<div class="question-number">Q${String(current + 1).padStart(2,"0")} / PERSONALITY</div><h2>${item.q}</h2><div class="answers">${item.a.map((answer, i) => `<button class="answer ${answers[current] === answer[1] ? "selected" : ""}" data-index="${i}" type="button"><span class="letter">${String.fromCharCode(65+i)}</span><span>${answer[0]}</span></button>`).join("")}</div>`;
+      $("questionContent").querySelectorAll(".answer").forEach(btn => btn.addEventListener("click", () => {
+        answers[current] = item.a[Number(btn.dataset.index)][1];
+        renderQuestion();
+      }));
+      $("backBtn").disabled = current === 0;
+      $("backBtn").style.opacity = current === 0 ? ".45" : "1";
+      $("nextBtn").textContent = current === questions.length - 1 ? "Lihat hasil ✦" : "Lanjut →";
+    }
+    function showResult() {
+      const scores = { intro: 0, social: 0, bold: 0, care: 0 };
+      answers.forEach(a => { if (a) scores[a]++; });
+      const winner = Object.keys(scores).sort((a,b) => scores[b] - scores[a])[0];
+      const p = profiles[winner];
+      $("resultIcon").textContent = p.icon;
+      $("resultTitle").textContent = p.title;
+      $("resultDesc").textContent = p.desc;
+      $("resultTip").textContent = p.tip;
+      $("traits").innerHTML = p.traits.map(([name, val]) => `<div><div class="trait-head"><span>${name}</span><span>${val}%</span></div><div class="trait-bar"><span style="width:${val}%"></span></div></div>`).join("");
+      showPanel("resultPanel");
+    }
+    $("startBtn").addEventListener("click", () => { current = 0; answers = Array(questions.length).fill(null); showPanel("quizPanel"); renderQuestion(); });
+    $("backBtn").addEventListener("click", () => { if (current > 0) { current--; renderQuestion(); } });
+    $("nextBtn").addEventListener("click", () => {
+      if (!answers[current]) {
+        const content = $("questionContent");
+        content.animate([{ transform: "translateX(-4px)" }, { transform: "translateX(4px)" }, { transform: "translateX(0)" }], { duration: 180 });
+        $("nextBtn").textContent = "Pilih jawaban dulu";
+        setTimeout(() => { $("nextBtn").textContent = current === questions.length - 1 ? "Lihat hasil ✦" : "Lanjut →"; }, 1000);
+        return;
+      }
+      if (current < questions.length - 1) { current++; renderQuestion(); } else showResult();
+    });
+    $("retryBtn").addEventListener("click", () => { current = 0; answers = Array(questions.length).fill(null); showPanel("startPanel"); });
+    $("shareBtn").addEventListener("click", async () => {
+      const text = `Hasil personality test-ku: ${$("resultTitle").textContent} — ${$("resultDesc").textContent}\nCoba tesnya di website r3yy!`;
+      if (navigator.share) {
+        try { await navigator.share({ title: "Personality Test — r3yy", text, url: location.href }); } catch (e) {}
+      } else {
+        try { await navigator.clipboard.writeText(`${text}\n${location.href}`); $("shareBtn").textContent = "Tersalin ✓"; setTimeout(() => $("shareBtn").textContent = "Bagikan hasil ↗", 1800); }
+        catch (e) { window.prompt("Salin hasil ini:", `${text}\n${location.href}`); }
+      }
+    });
+  </script>
+</body>
+</html>
